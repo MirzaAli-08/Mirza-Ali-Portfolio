@@ -1,11 +1,25 @@
 "use client";
 import { motion, useAnimation } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 
 export default function Home() {
   // Controls for the spotlight flicker and name reveal
   const controls = useAnimation();
+
+  // Section refs for smooth scroll
+  const heroRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+  const aboutRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+  const projectsRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+  const achievementsRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+  const educationRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+  const contactRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
+
+  // Smooth scroll handler
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, ref: React.RefObject<HTMLElement>) => {
+    e.preventDefault();
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     async function sequence() {
@@ -29,17 +43,17 @@ export default function Home() {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 w-full z-50 flex justify-center py-6 bg-background/80 backdrop-blur-md border-b border-border">
         <ul className="flex gap-8 text-lg font-semibold">
-          <li><a href="#hero" className="hover:underline transition-all">Home</a></li>
-          <li><a href="#about" className="hover:underline transition-all">About</a></li>
-          <li><a href="#projects" className="hover:underline transition-all">Projects</a></li>
-          <li><a href="#achievements" className="hover:underline transition-all">Achievements</a></li>
-          <li><a href="#education" className="hover:underline transition-all">Education</a></li>
-          <li><a href="#contact" className="hover:underline transition-all">Contact</a></li>
+          <li><a href="#hero" onClick={e => handleNavClick(e, heroRef)} className="hover:underline transition-all">Home</a></li>
+          <li><a href="#about" onClick={e => handleNavClick(e, aboutRef)} className="hover:underline transition-all">About</a></li>
+          <li><a href="#projects" onClick={e => handleNavClick(e, projectsRef)} className="hover:underline transition-all">Projects</a></li>
+          <li><a href="#achievements" onClick={e => handleNavClick(e, achievementsRef)} className="hover:underline transition-all">Achievements</a></li>
+          <li><a href="#education" onClick={e => handleNavClick(e, educationRef)} className="hover:underline transition-all">Education</a></li>
+          <li><a href="#contact" onClick={e => handleNavClick(e, contactRef)} className="hover:underline transition-all">Contact</a></li>
         </ul>
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="h-screen flex items-center justify-center relative overflow-hidden">
+      <section id="hero" ref={heroRef} className="h-screen flex items-center justify-center relative overflow-hidden">
         {/* Parallax background vignette */}
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="w-full h-full bg-gradient-to-b from-black/80 via-black/60 to-transparent" />
@@ -85,12 +99,12 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="min-h-[60vh] flex items-center justify-center py-24">
+      <section id="about" ref={aboutRef} className="min-h-[60vh] flex items-center justify-center py-24">
         <motion.div
           className="max-w-2xl mx-auto text-center"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.4 }}
+          viewport={{ amount: 0.4 }}
           transition={{ staggerChildren: 0.15 }}
           variants={{
             hidden: {},
@@ -102,7 +116,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            viewport={{ once: true }}
+            viewport={{ amount: 0.3 }}
           >
             About Me
           </motion.h2>
@@ -111,7 +125,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true }}
+            viewport={{ amount: 0.3 }}
           >
             I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future. I’m drawn to projects that create real-world impact and reflect leadership, creativity, and resilience.
           </motion.p>
@@ -119,7 +133,7 @@ export default function Home() {
             className="flex flex-wrap justify-center gap-4 mt-6"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ amount: 0.3 }}
             variants={{
               hidden: {},
               visible: {
@@ -142,7 +156,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 + i * 0.1, ease: "easeOut" }}
-                viewport={{ once: true }}
+                viewport={{ amount: 0.3 }}
               >
                 {skill}
               </motion.li>
@@ -152,7 +166,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="min-h-[60vh] flex flex-col items-center justify-center py-24 bg-charcoal">
+      <section id="projects" ref={projectsRef} className="min-h-[60vh] flex flex-col items-center justify-center py-24 bg-charcoal">
         <div className="max-w-4xl mx-auto w-full">
           <h2 className="text-3xl font-bold mb-6 text-white">Projects</h2>
           <div className="grid md:grid-cols-2 gap-8">
@@ -163,21 +177,22 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.03, boxShadow: "0 8px 40px 0 rgba(200,200,255,0.10)" }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              viewport={{ once: true }}
+              viewport={{ amount: 0.3 }}
             >
               {/* Moon/Night background */}
               <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="w-full h-full bg-gradient-to-t from-black/80 via-charcoal/80 to-transparent" />
                 <div className="absolute -top-8 right-8 w-24 h-24 bg-gradient-radial from-white/30 to-transparent rounded-full blur-2xl opacity-60" />
               </div>
-              {/* Logo placeholder */}
+              {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl font-bold shadow-md">🌙</div>
+                <Image src="/lunar.PNG" alt="Lunar Initiative Logo" width={48} height={48} className="rounded-full object-cover border-2 border-white/20 shadow-md bg-white/10" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">Lunar Initiative</h3>
               <p className="text-white/80 mb-4 z-10">
                 During Ramadan, we distributed free hot meals in a public park to those fasting. What made it impactful was the overwhelming community response — people showed up, donated food, and supported us beyond expectation. It was a powerful moment of youth-led hospitality and unity.
               </p>
+              <a href="https://www.instagram.com/lunarinitiative" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono z-10">@lunarinitiative</a>
             </motion.div>
             {/* MUNHUB Card */}
             <motion.div
@@ -186,20 +201,20 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.03, boxShadow: "0 8px 40px 0 rgba(200,200,255,0.10)" }}
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-              viewport={{ once: true }}
+              viewport={{ amount: 0.3 }}
             >
               {/* Social card preview background */}
               <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="w-full h-full bg-gradient-to-t from-charcoal/90 via-black/60 to-transparent" />
                 <div className="absolute -bottom-8 left-8 w-24 h-24 bg-gradient-radial from-blue-400/20 to-transparent rounded-full blur-2xl opacity-50" />
               </div>
-              {/* Logo placeholder */}
+              {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white text-2xl font-bold shadow-md">🗨️</div>
+                <Image src="/munhub.PNG" alt="MUNHUB Logo" width={48} height={48} className="rounded-full object-cover border-2 border-white/20 shadow-md bg-white/10" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">MUNHUB</h3>
               <p className="text-white/80 mb-4 z-10">
-                A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters. Visit: <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors">@munxhub</a>
+                A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters. Visit: <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono">@munxhub</a>
               </p>
               {/* Social preview mockup */}
               <div className="relative z-10 w-full flex justify-center mt-2">
@@ -211,7 +226,7 @@ export default function Home() {
       </section>
 
       {/* Achievements Section */}
-      <section id="achievements" className="min-h-[40vh] flex items-center justify-center py-24">
+      <section id="achievements" ref={achievementsRef} className="min-h-[40vh] flex items-center justify-center py-24">
         <div className="max-w-3xl mx-auto w-full text-center">
           <h2 className="text-3xl font-bold mb-6">Achievements</h2>
           <div className="flex flex-wrap justify-center gap-8 mt-8">
@@ -221,7 +236,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              viewport={{ once: true }}
+              viewport={{ amount: 0.3 }}
             >
               <div className="mb-3">
                 {/* Trophy icon */}
@@ -236,7 +251,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-              viewport={{ once: true }}
+              viewport={{ amount: 0.3 }}
             >
               <div className="mb-3">
                 {/* Badge icon */}
@@ -250,14 +265,14 @@ export default function Home() {
       </section>
 
       {/* Education Section */}
-      <section id="education" className="min-h-[40vh] flex items-center justify-center py-24 bg-charcoal">
+      <section id="education" ref={educationRef} className="min-h-[40vh] flex items-center justify-center py-24 bg-charcoal">
         <div className="max-w-2xl mx-auto w-full text-center">
           <motion.h2
             className="text-3xl font-bold mb-6 text-white"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            viewport={{ once: true }}
+            viewport={{ amount: 0.3 }}
           >
             Education
           </motion.h2>
@@ -266,7 +281,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            viewport={{ once: true }}
+            viewport={{ amount: 0.3 }}
           >
             <div className="mb-2">
               <span className="text-lg font-semibold text-white">Alfaris International School, Riyadh</span>
@@ -283,7 +298,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
-              viewport={{ once: true }}
+              viewport={{ amount: 0.3 }}
             >
               <div className="font-semibold text-white mb-1">Math Quest</div>
               <div className="text-white/80 text-sm">
@@ -295,13 +310,13 @@ export default function Home() {
       </section>
 
       {/* Contact/Footer Section */}
-      <footer id="contact" className="w-full py-12 bg-background border-t border-border text-center relative overflow-hidden">
+      <footer id="contact" ref={contactRef} className="w-full py-12 bg-background border-t border-border text-center relative overflow-hidden">
         <motion.div
           className="max-w-xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          viewport={{ once: true }}
+          viewport={{ amount: 0.3 }}
         >
           <h2 className="text-2xl font-bold mb-4">Contact</h2>
           <div className="flex flex-col items-center gap-2 text-lg text-white/90">
@@ -317,7 +332,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5, ease: 'easeOut' }}
-          viewport={{ once: true }}
+          viewport={{ amount: 0.3 }}
           aria-label="Scroll to top"
         >
           <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/></svg>
