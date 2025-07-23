@@ -186,7 +186,9 @@ export default function Home() {
               </div>
               {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <Image src="/lunar.png" alt="Lunar Initiative Logo" width={48} height={48} className="rounded-full object-cover border-2 border-white/20 shadow-md bg-white/10" />
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
+                  <Image src="/lunar.png" alt="Lunar Initiative Logo" width={48} height={48} className="object-cover w-full h-full" />
+                </div>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">Lunar Initiative</h3>
               <p className="text-white/80 mb-4 z-10">
@@ -210,7 +212,9 @@ export default function Home() {
               </div>
               {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <Image src="/munhub.png" alt="MUNHUB Logo" width={48} height={48} className="rounded-full object-cover border-2 border-white/20 shadow-md bg-white/10" />
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
+                  <Image src="/munhub.png" alt="MUNHUB Logo" width={48} height={48} className="object-cover w-full h-full" />
+                </div>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">MUNHUB</h3>
               <p className="text-white/80 mb-4 z-10">
