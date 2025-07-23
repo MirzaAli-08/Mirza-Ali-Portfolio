@@ -194,7 +194,7 @@ export default function Home() {
               <p className="text-white/80 mb-4 z-10">
                 During Ramadan, we distributed free hot meals in a public park to those fasting. What made it impactful was the overwhelming community response — people showed up, donated food, and supported us beyond expectation. It was a powerful moment of youth-led hospitality and unity.
               </p>
-              <a href="https://www.instagram.com/lunarinitiative" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono z-10">@lunarinitiative</a>
+              <a href="https://www.instagram.com/lunarinitiative" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono z-10">visit @lunarinitiative</a>
             </motion.div>
             {/* MUNHUB Card */}
             <motion.div
@@ -220,10 +220,6 @@ export default function Home() {
               <p className="text-white/80 mb-4 z-10">
                 A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters. Visit: <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono">@munxhub</a>
               </p>
-              {/* Social preview mockup */}
-              <div className="relative z-10 w-full flex justify-center mt-2">
-                <div className="w-32 h-20 bg-white/10 rounded-lg flex items-center justify-center text-white/60 text-xs font-mono border border-white/10">Instagram Preview</div>
-              </div>
             </motion.div>
           </div>
         </div>
