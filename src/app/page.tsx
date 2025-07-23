@@ -2,6 +2,7 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { Mail, Phone, Instagram } from "lucide-react";
 
 export default function Home() {
   // Controls for the spotlight flicker and name reveal
@@ -194,7 +195,10 @@ export default function Home() {
               <p className="text-white/80 mb-4 z-10">
                 During Ramadan, we distributed free hot meals in a public park to those fasting. What made it impactful was the overwhelming community response — people showed up, donated food, and supported us beyond expectation. It was a powerful moment of youth-led hospitality and unity.
               </p>
-              <a href="https://www.instagram.com/lunarinitiative" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono z-10">visit @lunarinitiative</a>
+              <a href="https://www.instagram.com/lunarinitiative" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 underline hover:text-blue-300 transition-colors text-base font-mono z-10">
+                <Instagram className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
+                Visit @lunarinitiative
+              </a>
             </motion.div>
             {/* MUNHUB Card */}
             <motion.div
@@ -218,8 +222,12 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">MUNHUB</h3>
               <p className="text-white/80 mb-4 z-10">
-                A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters. Visit: <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300 transition-colors text-base font-mono">@munxhub</a>
+                A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters.
               </p>
+              <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 underline hover:text-blue-300 transition-colors text-base font-mono z-10 mt-2">
+                <Instagram className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
+                Visit @munxhub
+              </a>
             </motion.div>
           </div>
         </div>
@@ -320,9 +328,18 @@ export default function Home() {
         >
           <h2 className="text-2xl font-bold mb-4">Contact</h2>
           <div className="flex flex-col items-center gap-2 text-lg text-white/90">
-            <a href="mailto:mirzaalihusnain1@gmail.com" className="hover:underline">mirzaalihusnain1@gmail.com</a>
-            <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="hover:underline">@Ali.npc</a>
-            <span className="text-white/70">+966 55 257 6459</span>
+            <div className="flex items-center gap-2">
+              <Mail className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
+              <a href="mailto:mirzaalihusnain1@gmail.com" className="hover:underline">mirzaalihusnain1@gmail.com</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <Instagram className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
+              <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="hover:underline">@Ali.npc</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
+              <span className="text-white/70">+966 55 257 6459</span>
+            </div>
           </div>
         </motion.div>
         {/* Scroll to top button */}
