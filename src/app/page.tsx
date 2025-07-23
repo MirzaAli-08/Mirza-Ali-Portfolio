@@ -78,7 +78,7 @@ export default function Home() {
             transition={{ delay: 1.7, duration: 1.1, ease: "easeOut" }}
             className="text-4xl md:text-6xl font-bold mb-4 tracking-tight drop-shadow-lg"
           >
-            Hello, I'm <span className="text-white/90">Mirza Ali</span>
+            Hello, I&apos;m <span className="text-white/90">Mirza Ali</span>
             <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2">a Student Leader and Community Builder.</span>
           </motion.h1>
         </motion.div>
@@ -113,7 +113,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             viewport={{ once: true }}
           >
-            I'm a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future. I’m drawn to projects that create real-world impact and reflect leadership, creativity, and resilience.
+            I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future. I’m drawn to projects that create real-world impact and reflect leadership, creativity, and resilience.
           </motion.p>
           <motion.ul
             className="flex flex-wrap justify-center gap-4 mt-6"
