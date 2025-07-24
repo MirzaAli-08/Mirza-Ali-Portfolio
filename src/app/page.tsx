@@ -46,6 +46,7 @@ export default function Home() {
     const fullText = "a Student Leader and Community Builder.";
     let i = 0;
     let timeout: NodeJS.Timeout;
+    let startTimeout: NodeJS.Timeout;
     function type() {
       setTypedText(fullText.slice(0, i + 1));
       if (i < fullText.length) {
@@ -54,8 +55,14 @@ export default function Home() {
       }
     }
     setTypedText("");
-    type();
-    return () => clearTimeout(timeout);
+    // Wait for hero to load in (2s for photo + 1.1s for name = 3.1s, add a little buffer)
+    startTimeout = setTimeout(() => {
+      type();
+    }, 3200);
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(startTimeout);
+    };
   }, []);
 
   return (
@@ -115,7 +122,9 @@ export default function Home() {
             Hello, I&apos;m <span className="text-white/90">Mirza Ali</span>
             <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2 min-h-[2.5rem]">
               {typedText}
-              <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
+              {typedText.length < "a Student Leader and Community Builder.".length && (
+                <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
+              )}
             </span>
           </motion.h1>
         </motion.div>
