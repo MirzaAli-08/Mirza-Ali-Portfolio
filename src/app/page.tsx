@@ -47,10 +47,10 @@ export default function Home() {
     let i = 0;
     let timeout: NodeJS.Timeout;
     function type() {
-      setTypedText(fullText.slice(0, i));
+      setTypedText(fullText.slice(0, i + 1));
       if (i < fullText.length) {
         i++;
-        timeout = setTimeout(type, 35);
+        timeout = setTimeout(type, 45);
       }
     }
     setTypedText("");
@@ -210,7 +210,7 @@ export default function Home() {
               {/* Logo image */}
               <div className="relative z-10 mb-4">
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
-                  <Image src="/lunar-circle.png" alt="Lunar Initiative Logo" width={80} height={80} className="object-cover w-full h-full scale-125" />
+                  <Image src="/lunar-circle.png" alt="Lunar Initiative Logo" width={80} height={80} className="object-cover w-full h-full scale-140" />
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">Lunar Initiative</h3>
