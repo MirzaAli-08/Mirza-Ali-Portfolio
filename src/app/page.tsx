@@ -3,6 +3,7 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Mail, Phone, Instagram } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
   // Controls for the spotlight flicker and name reveal
@@ -38,6 +39,24 @@ export default function Home() {
     }
     sequence();
   }, [controls]);
+
+  // Typewriter effect for subtitle
+  const [typedText, setTypedText] = useState("");
+  useEffect(() => {
+    const fullText = "a Student Leader and Community Builder.";
+    let i = 0;
+    let timeout: NodeJS.Timeout;
+    function type() {
+      setTypedText(fullText.slice(0, i));
+      if (i < fullText.length) {
+        i++;
+        timeout = setTimeout(type, 35);
+      }
+    }
+    setTypedText("");
+    type();
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
     <main className="relative w-full min-h-screen bg-background text-foreground font-inter overflow-x-hidden">
@@ -94,7 +113,10 @@ export default function Home() {
             className="text-4xl md:text-6xl font-bold mb-4 tracking-tight drop-shadow-lg"
           >
             Hello, I&apos;m <span className="text-white/90">Mirza Ali</span>
-            <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2">a Student Leader and Community Builder.</span>
+            <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2 min-h-[2.5rem]">
+              {typedText}
+              <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
+            </span>
           </motion.h1>
         </motion.div>
       </section>
@@ -187,8 +209,8 @@ export default function Home() {
               </div>
               {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
-                  <Image src="/lunar-circle.png" alt="Lunar Initiative Logo" width={48} height={48} className="object-cover w-full h-full" />
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
+                  <Image src="/lunar-circle.png" alt="Lunar Initiative Logo" width={80} height={80} className="object-cover w-full h-full scale-125" />
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">Lunar Initiative</h3>
@@ -216,8 +238,8 @@ export default function Home() {
               </div>
               {/* Logo image */}
               <div className="relative z-10 mb-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
-                  <Image src="/munhub-circle.png" alt="MUNHUB Logo" width={48} height={48} className="object-cover w-full h-full" />
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-md bg-white/10 flex items-center justify-center">
+                  <Image src="/munhub-circle.png" alt="MUNHUB Logo" width={80} height={80} className="object-cover w-full h-full scale-125" />
                 </div>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">MUNHUB</h3>
