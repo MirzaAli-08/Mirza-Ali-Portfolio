@@ -45,23 +45,19 @@ export default function Home() {
   useEffect(() => {
     const fullText = "a Student Leader and Community Builder.";
     let i = 0;
-    let timeout: NodeJS.Timeout;
-    let startTimeout: NodeJS.Timeout;
-    function type() {
-      setTypedText(fullText.slice(0, i + 1));
-      if (i < fullText.length) {
+    let interval: NodeJS.Timeout;
+    const startTimeout = setTimeout(() => {
+      interval = setInterval(() => {
         i++;
-        timeout = setTimeout(type, 45);
-      }
-    }
-    setTypedText("");
-    // Wait for hero to load in (2s for photo + 1.1s for name = 3.1s, add a little buffer)
-    startTimeout = setTimeout(() => {
-      type();
+        setTypedText(fullText.slice(0, i));
+        if (i === fullText.length) {
+          clearInterval(interval);
+        }
+      }, 45);
     }, 3200);
     return () => {
-      clearTimeout(timeout);
       clearTimeout(startTimeout);
+      if (interval) clearInterval(interval);
     };
   }, []);
 
