@@ -1,13 +1,21 @@
 "use client";
 import { motion, useAnimation } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Mail, Phone, Instagram } from "lucide-react";
-import { useState } from "react";
+import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+
+// Register GSAP plugins
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(Draggable);
+}
 
 export default function Home() {
   // Controls for the spotlight flicker and name reveal
   const controls = useAnimation();
+  const lanyardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // Section refs for smooth scroll
   const heroRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
@@ -22,23 +30,6 @@ export default function Home() {
     e.preventDefault();
     ref.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    async function sequence() {
-      // Flicker effect
-      await controls.start({ opacity: [0, 1, 0.5, 1, 0.7, 1], filter: [
-        "blur(8px)",
-        "blur(2px)",
-        "blur(6px)",
-        "blur(1px)",
-        "blur(3px)",
-        "blur(0px)"
-      ], transition: { duration: 1.6, times: [0, 0.2, 0.4, 0.6, 0.8, 1], ease: "easeInOut" } });
-      // Hold spotlight and reveal name
-      await controls.start({ opacity: 1, filter: "blur(0px)", transition: { duration: 0.7 } });
-    }
-    sequence();
-  }, [controls]);
 
   // Typewriter effect for subtitle
   const [typedText, setTypedText] = useState("");
@@ -61,6 +52,114 @@ export default function Home() {
     };
   }, []);
 
+  // Lanyard physics and animation
+  useEffect(() => {
+    if (!lanyardRef.current || !cardRef.current) return;
+
+    // Initial drop animation
+    gsap.set(lanyardRef.current, { 
+      y: -200, 
+      x: 100,
+      rotation: -15,
+      opacity: 0 
+    });
+
+    // Drop the lanyard
+    const tl = gsap.timeline();
+    tl.to(lanyardRef.current, {
+      y: 0,
+      x: 0,
+      rotation: 0,
+      opacity: 1,
+      duration: 1.5,
+      ease: "bounce.out"
+    });
+
+    // Add subtle sway
+    gsap.to(cardRef.current, {
+      rotation: 2,
+      duration: 2,
+      repeat: -1,
+      yoyo: true,
+      ease: "power1.inOut",
+      delay: 1.5
+    });
+
+    // Make the card draggable with physics
+    Draggable.create(cardRef.current, {
+      type: "x,y",
+      bounds: "body",
+      inertia: true,
+      onDrag: function() {
+        // Add tension effect
+        gsap.to(lanyardRef.current, {
+          rotation: this.rotation + (this.x * 0.1),
+          duration: 0.1
+        });
+      },
+      onThrowComplete: function() {
+        // Return to hanging position with physics
+        gsap.to(cardRef.current, {
+          x: 0,
+          y: 0,
+          rotation: 0,
+          duration: 1,
+          ease: "elastic.out(1, 0.5)"
+        });
+        gsap.to(lanyardRef.current, {
+          rotation: 0,
+          duration: 1,
+          ease: "elastic.out(1, 0.5)"
+        });
+      }
+    });
+
+    // Scroll interaction
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      if (cardRef.current) {
+        gsap.to(cardRef.current, {
+          rotation: Math.sin(window.scrollY * 0.01) * 3,
+          duration: 0.3,
+          ease: "power1.out"
+        });
+      }
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (cardRef.current) {
+          gsap.to(cardRef.current, {
+            rotation: 0,
+            duration: 1,
+            ease: "elastic.out(1, 0.5)"
+          });
+        }
+      }, 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    async function sequence() {
+      // Flicker effect
+      await controls.start({ opacity: [0, 1, 0.5, 1, 0.7, 1], filter: [
+        "blur(8px)",
+        "blur(2px)",
+        "blur(6px)",
+        "blur(1px)",
+        "blur(3px)",
+        "blur(0px)"
+      ], transition: { duration: 1.6, times: [0, 0.2, 0.4, 0.6, 0.8, 1], ease: "easeInOut" } });
+      // Hold spotlight and reveal name
+      await controls.start({ opacity: 1, filter: "blur(0px)", transition: { duration: 0.7 } });
+    }
+    sequence();
+  }, [controls]);
+
   return (
     <main className="relative w-full min-h-screen bg-background text-foreground font-inter overflow-x-hidden">
       {/* Navbar */}
@@ -75,54 +174,97 @@ export default function Home() {
         </ul>
       </nav>
 
+      {/* Hanging Lanyard Card */}
+      <div ref={lanyardRef} className="fixed top-8 right-8 z-40 pointer-events-none">
+        {/* Lanyard string */}
+        <div className="w-1 h-16 bg-gradient-to-b from-white/60 to-white/20 mx-auto mb-2" />
+        
+        {/* ID Card */}
+        <div ref={cardRef} className="w-80 bg-gradient-to-br from-charcoal/95 to-black/90 rounded-xl p-6 shadow-2xl border border-white/20 pointer-events-auto cursor-grab active:cursor-grabbing">
+          {/* Profile Photo */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-md">
+              <Image
+                src="/ali-profile.jpg"
+                alt="Mirza Ali profile photo"
+                width={64}
+                height={64}
+                className="object-cover w-full h-full"
+                priority
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-white">Mirza Ali</h3>
+              <p className="text-white/70 text-sm">Student Leader & Community Builder</p>
+            </div>
+          </div>
+          
+          {/* Bio */}
+          <p className="text-white/80 text-sm mb-4 leading-relaxed">
+            I'm a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future.
+          </p>
+          
+          {/* Contact Icons */}
+          <div className="flex gap-3">
+            <a href="mailto:mirzaalihusnain1@gmail.com" className="text-white/70 hover:text-white transition-colors">
+              <Mail className="w-4 h-4" />
+            </a>
+            <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
+              <Instagram className="w-4 h-4" />
+            </a>
+            <span className="text-white/70">
+              <Phone className="w-4 h-4" />
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section id="hero" ref={heroRef} className="h-screen flex items-center justify-center relative overflow-hidden">
         {/* Parallax background vignette */}
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="w-full h-full bg-gradient-to-b from-black/80 via-black/60 to-transparent" />
         </div>
-        {/* Spotlight and photo */}
+        
+        {/* Centered Content */}
         <motion.div
-          initial={{ opacity: 0, filter: "blur(8px)" }}
-          animate={controls}
-          className="relative z-10 flex flex-col items-center"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center text-center"
         >
-          <div className="relative mb-8">
-            <Image
-              src="/ali-profile.jpg"
-              alt="Mirza Ali profile photo"
-              width={220}
-              height={220}
-              className="rounded-full shadow-spotlight border-4 border-background object-cover"
-              priority
-            />
-            {/* Animated spotlight overlay */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 1.2, ease: "easeOut" }}
-              className="absolute inset-0 rounded-full pointer-events-none"
-              style={{
-                boxShadow: "0 0 120px 40px rgba(255,255,255,0.18)",
-                mixBlendMode: "screen",
-              }}
-            />
-          </div>
-          {/* Animated name reveal */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.7, duration: 1.1, ease: "easeOut" }}
-            className="text-4xl md:text-6xl font-bold mb-4 tracking-tight drop-shadow-lg"
+            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
+            className="text-lg md:text-xl text-white/60 mb-2 font-medium"
           >
-            Hello, I&apos;m <span className="text-white/90">Mirza Ali</span>
-            <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2 min-h-[2.5rem]">
-              {typedText}
-              {typedText.length < "a Student Leader and Community Builder.".length && (
-                <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
-              )}
-            </span>
+            Mirza Ali&apos;s
+          </motion.p>
+          
+          {/* Main Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0, duration: 1.0, ease: "easeOut" }}
+            className="text-6xl md:text-8xl font-bold mb-6 tracking-tight drop-shadow-lg text-white"
+          >
+            PORTOFOLIO
           </motion.h1>
+          
+          {/* Animated subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.8, ease: "easeOut" }}
+            className="text-lg md:text-2xl font-medium text-white/60 mt-4 min-h-[2.5rem]"
+          >
+            {typedText}
+            {typedText.length < "a Student Leader and Community Builder.".length && (
+              <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
+            )}
+          </motion.div>
         </motion.div>
       </section>
 
@@ -155,7 +297,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             viewport={{ amount: 0.3 }}
           >
-            I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future. I’m drawn to projects that create real-world impact and reflect leadership, creativity, and resilience.
+            I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future. I&apos;m drawn to projects that create real-world impact and reflect leadership, creativity, and resilience.
           </motion.p>
           <motion.ul
             className="flex flex-wrap justify-center gap-4 mt-6"
@@ -249,7 +391,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-white mb-2 z-10">MUNHUB</h3>
               <p className="text-white/80 mb-4 z-10">
-                A dual-purpose Instagram-based platform for Riyadh’s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters.
+                A dual-purpose Instagram-based platform for Riyadh&apos;s MUN ecosystem. For delegates, it provides an organized feed of active MUNs. For MUN organizers, we collaborate on promotional content, stories, committee updates, and post-event newsletters.
               </p>
               <a href="https://www.instagram.com/munxhub" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 underline hover:text-blue-300 transition-colors text-base font-mono z-10 mt-2">
                 <Instagram className="w-5 h-5 text-white drop-shadow-[0_0_6px_white]" />
