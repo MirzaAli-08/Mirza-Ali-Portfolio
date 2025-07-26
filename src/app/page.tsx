@@ -16,6 +16,7 @@ export default function Home() {
   const controls = useAnimation();
   const lanyardRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const ropeRef = useRef<HTMLDivElement>(null);
 
   // Section refs for smooth scroll
   const heroRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
@@ -54,11 +55,11 @@ export default function Home() {
 
   // Lanyard physics and animation
   useEffect(() => {
-    if (!lanyardRef.current || !cardRef.current) return;
+    if (!lanyardRef.current || !cardRef.current || !ropeRef.current) return;
 
     // Initial drop animation
     gsap.set(lanyardRef.current, { 
-      y: -200, 
+      y: -300, 
       x: 100,
       rotation: -15,
       opacity: 0 
@@ -71,56 +72,71 @@ export default function Home() {
       x: 0,
       rotation: 0,
       opacity: 1,
-      duration: 1.5,
+      duration: 1.8,
       ease: "bounce.out"
     });
 
     // Add subtle sway
     gsap.to(cardRef.current, {
-      rotation: 2,
-      duration: 2,
+      rotation: 1.5,
+      duration: 3,
       repeat: -1,
       yoyo: true,
       ease: "power1.inOut",
-      delay: 1.5
+      delay: 2
     });
 
-    // Make the card draggable with physics
+    // Make the card draggable with improved physics
     Draggable.create(cardRef.current, {
       type: "x,y",
       bounds: "body",
       inertia: true,
       onDrag: function() {
-        // Add tension effect
+        // Add tension effect to rope
+        const distance = Math.sqrt(this.x * this.x + this.y * this.y);
+        const maxDistance = 150;
+        const tension = Math.min(distance / maxDistance, 1);
+        
+        gsap.to(ropeRef.current, {
+          scaleY: 1 + tension * 0.3,
+          duration: 0.1
+        });
+        
         gsap.to(lanyardRef.current, {
-          rotation: this.rotation + (this.x * 0.1),
+          rotation: this.rotation + (this.x * 0.05),
           duration: 0.1
         });
       },
       onThrowComplete: function() {
-        // Return to hanging position with physics
+        // Return to hanging position with elastic physics
         gsap.to(cardRef.current, {
           x: 0,
           y: 0,
           rotation: 0,
-          duration: 1,
+          duration: 1.2,
           ease: "elastic.out(1, 0.5)"
         });
         gsap.to(lanyardRef.current, {
           rotation: 0,
-          duration: 1,
+          duration: 1.2,
+          ease: "elastic.out(1, 0.5)"
+        });
+        gsap.to(ropeRef.current, {
+          scaleY: 1,
+          duration: 1.2,
           ease: "elastic.out(1, 0.5)"
         });
       }
     });
 
-    // Scroll interaction
+    // Scroll interaction with improved physics
     let scrollTimeout: NodeJS.Timeout;
     const handleScroll = () => {
       if (cardRef.current) {
+        const scrollFactor = Math.sin(window.scrollY * 0.005) * 2;
         gsap.to(cardRef.current, {
-          rotation: Math.sin(window.scrollY * 0.01) * 3,
-          duration: 0.3,
+          rotation: scrollFactor,
+          duration: 0.4,
           ease: "power1.out"
         });
       }
@@ -129,11 +145,11 @@ export default function Home() {
         if (cardRef.current) {
           gsap.to(cardRef.current, {
             rotation: 0,
-            duration: 1,
+            duration: 1.5,
             ease: "elastic.out(1, 0.5)"
           });
         }
-      }, 100);
+      }, 150);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -175,46 +191,60 @@ export default function Home() {
       </nav>
 
       {/* Hanging Lanyard Card */}
-      <div ref={lanyardRef} className="fixed top-8 right-8 z-40 pointer-events-none">
-        {/* Lanyard string */}
-        <div className="w-1 h-16 bg-gradient-to-b from-white/60 to-white/20 mx-auto mb-2" />
+      <div ref={lanyardRef} className="fixed top-0 right-8 z-40 pointer-events-none">
+        {/* Lanyard rope/strap */}
+        <div ref={ropeRef} className="relative mb-4">
+          {/* Rope texture */}
+          <div className="w-3 h-32 bg-gradient-to-b from-white/80 via-white/60 to-white/40 mx-auto rounded-full shadow-lg" />
+          {/* Rope highlights */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-32 bg-gradient-to-b from-white/90 via-white/70 to-white/50 rounded-full" />
+          {/* Clip/loop at the top */}
+          <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-6 h-4 bg-white/80 rounded-full shadow-md" />
+          {/* Clip/loop at the bottom */}
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-3 bg-white/60 rounded-full shadow-md" />
+        </div>
         
         {/* ID Card */}
-        <div ref={cardRef} className="w-80 bg-gradient-to-br from-charcoal/95 to-black/90 rounded-xl p-6 shadow-2xl border border-white/20 pointer-events-auto cursor-grab active:cursor-grabbing">
-          {/* Profile Photo */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 shadow-md">
+        <div ref={cardRef} className="w-64 h-40 bg-gradient-to-br from-white/95 via-white/90 to-white/85 rounded-xl p-4 shadow-2xl border border-white/30 pointer-events-auto cursor-grab active:cursor-grabbing transform-gpu" style={{
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.8)",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.85) 100%)"
+        }}>
+          {/* Card Header */}
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/30 shadow-md bg-white/20">
               <Image
                 src="/ali-profile.jpg"
                 alt="Mirza Ali profile photo"
-                width={64}
-                height={64}
+                width={48}
+                height={48}
                 className="object-cover w-full h-full"
                 priority
               />
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-white">Mirza Ali</h3>
-              <p className="text-white/70 text-sm">Student Leader & Community Builder</p>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-gray-800">Mirza Ali</h3>
+              <p className="text-gray-600 text-sm font-medium">Student Leader</p>
             </div>
           </div>
           
-          {/* Bio */}
-          <p className="text-white/80 text-sm mb-4 leading-relaxed">
-            I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future.
-          </p>
-          
-          {/* Contact Icons */}
-          <div className="flex gap-3">
-            <a href="mailto:mirzaalihusnain1@gmail.com" className="text-white/70 hover:text-white transition-colors">
-              <Mail className="w-4 h-4" />
-            </a>
-            <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
-              <Instagram className="w-4 h-4" />
-            </a>
-            <span className="text-white/70">
-              <Phone className="w-4 h-4" />
-            </span>
+          {/* Card Content */}
+          <div className="space-y-2">
+            <p className="text-gray-700 text-xs leading-tight">
+              Hardworking and high-achieving student committed to every initiative. Pushing beyond comfort zones to pursue growth milestones.
+            </p>
+            
+            {/* Contact Icons */}
+            <div className="flex gap-2 pt-1">
+              <a href="mailto:mirzaalihusnain1@gmail.com" className="text-gray-600 hover:text-gray-800 transition-colors">
+                <Mail className="w-3 h-3" />
+              </a>
+              <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800 transition-colors">
+                <Instagram className="w-3 h-3" />
+              </a>
+              <span className="text-gray-600">
+                <Phone className="w-3 h-3" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -238,7 +268,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-            className="text-lg md:text-xl text-white/60 mb-2 font-medium"
+            className="text-xl md:text-2xl text-white/70 mb-4 font-serif italic tracking-wide"
           >
             Mirza Ali&apos;s
           </motion.p>
@@ -248,7 +278,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.0, duration: 1.0, ease: "easeOut" }}
-            className="text-6xl md:text-8xl font-bold mb-6 tracking-tight drop-shadow-lg text-white"
+            className="text-7xl md:text-9xl font-black tracking-tight text-white mb-8"
+            style={{
+              textShadow: "0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(255,255,255,0.4), 0 0 120px rgba(255,255,255,0.2)",
+              filter: "drop-shadow(0 0 20px rgba(255,255,255,0.3))"
+            }}
           >
             PORTOFOLIO
           </motion.h1>
