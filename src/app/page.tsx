@@ -3,20 +3,10 @@ import { motion, useAnimation } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Mail, Phone, Instagram } from "lucide-react";
-import { gsap } from "gsap";
-import { Draggable } from "gsap/Draggable";
-
-// Register GSAP plugins
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(Draggable);
-}
 
 export default function Home() {
   // Controls for the spotlight flicker and name reveal
   const controls = useAnimation();
-  const lanyardRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const ropeRef = useRef<HTMLDivElement>(null);
 
   // Section refs for smooth scroll
   const heroRef = useRef<HTMLElement>(null) as React.RefObject<HTMLElement>;
@@ -32,109 +22,24 @@ export default function Home() {
     ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Lanyard physics and animation
+  // Typewriter effect for subtitle
+  const [typedText, setTypedText] = useState("");
   useEffect(() => {
-    if (!lanyardRef.current || !cardRef.current || !ropeRef.current) return;
-
-    // Initial drop animation
-    gsap.set(lanyardRef.current, { 
-      y: -400, 
-      x: 150,
-      rotation: -20,
-      opacity: 0 
-    });
-
-    // Drop the lanyard
-    const tl = gsap.timeline();
-    tl.to(lanyardRef.current, {
-      y: 0,
-      x: 0,
-      rotation: 0,
-      opacity: 1,
-      duration: 2.2,
-      ease: "bounce.out"
-    });
-
-    // Add subtle sway
-    gsap.to(cardRef.current, {
-      rotation: 2,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-      delay: 2.5
-    });
-
-    // Make the card draggable with improved physics
-    Draggable.create(cardRef.current, {
-      type: "x,y",
-      bounds: "body",
-      inertia: true,
-      onDrag: function() {
-        // Add tension effect to rope
-        const distance = Math.sqrt(this.x * this.x + this.y * this.y);
-        const maxDistance = 200;
-        const tension = Math.min(distance / maxDistance, 1);
-        
-        gsap.to(ropeRef.current, {
-          scaleY: 1 + tension * 0.4,
-          duration: 0.1
-        });
-        
-        gsap.to(lanyardRef.current, {
-          rotation: this.rotation + (this.x * 0.03),
-          duration: 0.1
-        });
-      },
-      onThrowComplete: function() {
-        // Return to hanging position with elastic physics
-        gsap.to(cardRef.current, {
-          x: 0,
-          y: 0,
-          rotation: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.5)"
-        });
-        gsap.to(lanyardRef.current, {
-          rotation: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.5)"
-        });
-        gsap.to(ropeRef.current, {
-          scaleY: 1,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.5)"
-        });
-      }
-    });
-
-    // Scroll interaction with improved physics
-    let scrollTimeout: NodeJS.Timeout;
-    const handleScroll = () => {
-      if (cardRef.current) {
-        const scrollFactor = Math.sin(window.scrollY * 0.003) * 3;
-        gsap.to(cardRef.current, {
-          rotation: scrollFactor,
-          duration: 0.5,
-          ease: "power1.out"
-        });
-      }
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        if (cardRef.current) {
-          gsap.to(cardRef.current, {
-            rotation: 0,
-            duration: 2,
-            ease: "elastic.out(1, 0.5)"
-          });
+    const fullText = "a Student Leader and Community Builder.";
+    let i = 0;
+    let interval: NodeJS.Timeout;
+    const startTimeout = setTimeout(() => {
+      interval = setInterval(() => {
+        i++;
+        setTypedText(fullText.slice(0, i));
+        if (i === fullText.length) {
+          clearInterval(interval);
         }
-      }, 200);
-    };
-
-    window.addEventListener('scroll', handleScroll);
+      }, 45);
+    }, 3200);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeout);
+      clearTimeout(startTimeout);
+      if (interval) clearInterval(interval);
     };
   }, []);
 
@@ -169,107 +74,53 @@ export default function Home() {
         </ul>
       </nav>
 
-      {/* Hanging Lanyard Card */}
-      <div ref={lanyardRef} className="fixed top-0 right-12 z-40 pointer-events-none">
-        {/* Lanyard rope/strap */}
-        <div ref={ropeRef} className="relative mb-6">
-          {/* Main rope */}
-          <div className="w-4 h-48 bg-gradient-to-b from-gray-300 via-gray-400 to-gray-500 mx-auto rounded-full shadow-lg" />
-          {/* Rope texture lines */}
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-2 h-48 bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 rounded-full" />
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-48 bg-gradient-to-b from-white via-gray-100 to-gray-200 rounded-full" />
-          {/* Top loop/clip */}
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-8 h-6 bg-gray-400 rounded-full shadow-md border-2 border-gray-300" />
-          {/* Bottom loop/clip */}
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-10 h-4 bg-gray-500 rounded-full shadow-md border-2 border-gray-400" />
-        </div>
-        
-        {/* ID Card */}
-        <div ref={cardRef} className="w-72 h-44 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg p-5 shadow-2xl border-2 border-gray-200 pointer-events-auto cursor-grab active:cursor-grabbing transform-gpu" style={{
-          boxShadow: "0 12px 40px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.9), inset 0 -2px 0 rgba(0,0,0,0.1)",
-          background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 25%, #e9ecef 50%, #dee2e6 75%, #ced4da 100%)",
-          transform: "perspective(1000px) rotateX(5deg) rotateY(-2deg)",
-          transformStyle: "preserve-3d"
-        }}>
-          {/* Card Header */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-14 h-14 rounded-full overflow-hidden border-3 border-gray-300 shadow-lg bg-white" style={{
-              boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2)"
-            }}>
-              <Image
-                src="/ali-profile.jpg"
-                alt="Mirza Ali profile photo"
-                width={56}
-                height={56}
-                className="object-cover w-full h-full"
-                priority
-              />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-gray-800 mb-1">Mirza Ali</h3>
-              <p className="text-gray-600 text-sm font-semibold">Student Leader</p>
-              <p className="text-gray-500 text-xs">Community Builder</p>
-            </div>
-          </div>
-          
-          {/* Card Content */}
-          <div className="space-y-3">
-            <p className="text-gray-700 text-sm leading-tight font-medium">
-              Hardworking and high-achieving student committed to every initiative. Pushing beyond comfort zones to pursue growth milestones.
-            </p>
-            
-            {/* Contact Icons */}
-            <div className="flex gap-3 pt-2">
-              <a href="mailto:mirzaalihusnain1@gmail.com" className="text-gray-600 hover:text-gray-800 transition-colors p-1 rounded-full hover:bg-gray-100">
-                <Mail className="w-4 h-4" />
-              </a>
-              <a href="https://www.instagram.com/ali.npc" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800 transition-colors p-1 rounded-full hover:bg-gray-100">
-                <Instagram className="w-4 h-4" />
-              </a>
-              <span className="text-gray-600 p-1 rounded-full">
-                <Phone className="w-4 h-4" />
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Hero Section */}
       <section id="hero" ref={heroRef} className="h-screen flex items-center justify-center relative overflow-hidden">
         {/* Parallax background vignette */}
         <div className="absolute inset-0 pointer-events-none z-0">
           <div className="w-full h-full bg-gradient-to-b from-black/80 via-black/60 to-transparent" />
         </div>
-        
-        {/* Centered Content */}
+        {/* Spotlight and photo */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1.2, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center text-center"
+          initial={{ opacity: 0, filter: "blur(8px)" }}
+          animate={controls}
+          className="relative z-10 flex flex-col items-center"
         >
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-            className="text-xl md:text-2xl text-white/70 mb-4 font-serif italic tracking-wide"
-          >
-            Mirza Ali&apos;s
-          </motion.p>
-          
-          {/* Main Title */}
+          <div className="relative mb-8">
+            <Image
+              src="/ali-profile.jpg"
+              alt="Mirza Ali profile photo"
+              width={220}
+              height={220}
+              className="rounded-full shadow-spotlight border-4 border-background object-cover"
+              priority
+            />
+            {/* Animated spotlight overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2, duration: 1.2, ease: "easeOut" }}
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                boxShadow: "0 0 120px 40px rgba(255,255,255,0.18)",
+                mixBlendMode: "screen",
+              }}
+            />
+          </div>
+          {/* Animated name reveal */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0, duration: 1.0, ease: "easeOut" }}
-            className="text-7xl md:text-9xl font-black tracking-tight text-white mb-8"
-            style={{
-              textShadow: "0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(255,255,255,0.4), 0 0 120px rgba(255,255,255,0.2)",
-              filter: "drop-shadow(0 0 20px rgba(255,255,255,0.3))"
-            }}
+            transition={{ delay: 1.7, duration: 1.1, ease: "easeOut" }}
+            className="text-4xl md:text-6xl font-bold mb-4 tracking-tight drop-shadow-lg"
           >
-            PORTOFOLIO
+            Hello, I&apos;m <span className="text-white/90">Mirza Ali</span>
+            <span className="block text-lg md:text-2xl font-medium text-white/60 mt-2 min-h-[2.5rem]">
+              {typedText}
+              {typedText.length < "a Student Leader and Community Builder.".length && (
+                <span className="inline-block w-2 h-5 align-middle bg-white/80 animate-pulse ml-1" style={{ verticalAlign: "middle" }} />
+              )}
+            </span>
           </motion.h1>
         </motion.div>
       </section>
