@@ -201,7 +201,7 @@ export default function Home() {
           
           {/* Bio */}
           <p className="text-white/80 text-sm mb-4 leading-relaxed">
-            I'm a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future.
+            I&apos;m a hardworking and high-achieving student who commits deeply to every initiative I join. I push beyond my comfort zone to pursue milestones that fuel my growth and future.
           </p>
           
           {/* Contact Icons */}
